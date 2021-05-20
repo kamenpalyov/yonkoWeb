@@ -1,24 +1,28 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import "./App.css";
+import { ApolloError, useQuery } from "@apollo/client";
+import {STOCKS} from "./graphql/queries"
+import { StocksProps } from "./types";
+import { NavBar } from "./components/NavBar";
+import { StocksComponent } from "./components/StocksComponent";
+import { AddNewStock } from "./components/AddNewStock";
 
 function App() {
+  const { loading, error, data } = useQuery(STOCKS) as StocksProps;
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+  if (error) {
+    return <div>Error : {error}</div>;
+  }
+  console.log(data.stocks)
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <NavBar/>
+      <AddNewStock/>
+      {data.stocks.map(stock=>{
+        return <StocksComponent stock={stock} />
+      })}
     </div>
   );
 }
